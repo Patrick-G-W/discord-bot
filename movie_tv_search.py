@@ -1,6 +1,4 @@
 from imdb import IMDb
-from dhooks import Webhook
-import json
 
 ia = IMDb()
 
