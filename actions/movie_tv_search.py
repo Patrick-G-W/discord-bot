@@ -12,8 +12,7 @@ def search(message):
     try:
         movieThumbURL = getMovie['cover url']
     except:
-        movieThumbURL = "images.unknown.png"
-        #movieThumbURL = "https://images.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png"
+        movieThumbURL = "https://github.com/Patrick-G-W/discord-bot/blob/master/images/unknown.png"
     moviePlot = str(getMovie['plot'][0])
     try:
         movieRelease = getMovie['year']
