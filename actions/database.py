@@ -21,9 +21,9 @@ def createDatabase(idList):
     db.commit()
 
 
-def insertNewUserIntoDatabase(userID):
+def insertNewUserIntoDatabase(userID, joinedAt, avatar_url, roles, name):
     print("Connected to database.")
-    db.execute('INSERT OR IGNORE INTO users (user_id) VALUES ({0})'.format(userID))
+    db.execute('INSERT OR IGNORE INTO users (user_id, userName, joinDate, avatarURL, roles) VALUES ({0},"{1}","{2}","{3}","{4}")'.format(userID, name, joinedAt, avatar_url, roles))
     db.commit()
     print("Added new user to database.")
 
@@ -38,8 +38,23 @@ def removeRedundantUsers(idList, userName):
 
 def updateDatabase(idList):
     print("Updating table with new data...")
+    print("Adding new users if there are any...")
     for x in idList:
         roles = ', '.join(str(e) for e in x.roles)
         db.execute('UPDATE users SET userName = "{0}", avatarURL = "{1}", roles = "{2}" WHERE user_id = {3}'.format(x.name, x.avatar_url, roles, x.id))
+        db.execute('INSERT OR IGNORE INTO users (user_id, userName, joinDate, avatarURL, roles) VALUES ({0},"{1}","{2}","{3}","{4}")'.format(x.id, x.name, str(x.joined_at)[:23], x.avatar_url, roles))
         db.commit()
+    print("Done adding new users.")
     print("Finished updating table.")
+
+
+def givePoints(userID, points):
+    db.execute('UPDATE users SET points = points + {0} WHERE user_id = "{1}"'.format(points, userID))
+    print("Gave {0} points to {1}.".format(points, userID))
+    db.commit()
+
+
+def removePoints(userID, points):
+    db.execute('UPDATE users SET points = points - {0} WHERE user_id = "{1}"'.format(points, userID))
+    print("Removed {0} points from {1}.".format(points, userID))
+    db.commit()
