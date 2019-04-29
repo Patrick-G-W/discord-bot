@@ -7,4 +7,4 @@ I will eventually come up with a guide to add the bot to you're own server, but 
 <b> [google-images-download:](https://github.com/hardikvasa/google-images-download) </b> This allows my bot to search Google Images<br>
 
 <h4>Current known bugs:</h4>
-- <b>Commands effecting the server owner will run twice.</b> .givepoints, .removepoints etc will always run twice for the server owner. This is because discordpy retrieves two copies of the server owners ID for some reason, will fix this very soon.<br>
+- <b>Commands effecting the server owner will run twice.</b> .givepoints, .removepoints etc will always run twice for the server owner. This also means that they will earn double passive points when normally chatting. This is because discordpy retrieves two copies of the server owners ID for some reason, will fix this very soon.<br>

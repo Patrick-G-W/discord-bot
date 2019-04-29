@@ -2,7 +2,7 @@ import discord
 from actions import secrets
 from actions.movie_tv_search import search
 from actions.googleImages import imageSearch
-from actions.database import createDatabase, insertNewUserIntoDatabase, removeRedundantUsers, updateDatabase, givePoints, removePoints
+from actions.database import createDatabase, insertNewUserIntoDatabase, removeRedundantUsers, updateDatabase, givePoints, removePoints, onMessageAddPoints, lookupUser
 
 client = discord.Client()
 
@@ -38,6 +38,11 @@ async def on_user_update(before, after):
 
 @client.event
 async def on_message(message):
+    pointUser = str(message.author)
+    for z in client.get_all_members():
+        if (z.name + "#" + z.discriminator) == pointUser:
+            onMessageAddPoints(z.id)
+
     if message.author == client.user:
         return
 
@@ -83,14 +88,14 @@ async def on_message(message):
             except IndexError:
                 em = discord.Embed(title="Formatting error", description='Correct formatting: \n`.dbremove \
                 "username#descriminator"`\ne.g. `.dbremove "alpha#1234"`\nYou can find a users\
-                username and descriminator by clicking on the users profile, it is positioned below the users \
+                username and discriminator by clicking on the users profile, it is positioned below the users \
                 server nickname.', color=0xFF0000)
                 await message.channel.send(embed=em)
             if "#" not in userDisc:
                 print("Error: Use username and discriminator when using this function.")
                 em = discord.Embed(title="Formatting error", description='Correct formatting: \n`.dbremove \
                 "username#descriminator"`\ne.g. `.dbremove "alpha#1234"`\nYou can find a users\
-                username and descriminator by clicking on the users profile, it is positioned below the users \
+                username and discriminator by clicking on the users profile, it is positioned below the users \
                 server nickname.', color=0xFF0000)
                 await message.channel.send(embed=em)
             else:
@@ -129,7 +134,7 @@ async def on_message(message):
                 except IndexError:
                     em = discord.Embed(title="Formatting error", description='Correct formatting: \n`.givepoints \
                     "username#descriminator" points`\ne.g. `.givepoints "alpha#1234" 100`\nYou can find a users\
-                    username and descriminator by clicking on the users profile, it is positioned below the users \
+                    username and discriminator by clicking on the users profile, it is positioned below the users \
                     server nickname.', color=0xFF0000)
                     await message.channel.send(embed=em)
                 points = userSplit[2]
@@ -138,7 +143,7 @@ async def on_message(message):
                     print("Error: Use username and discriminator when using this function.")
                     em = discord.Embed(title="Formatting error", description='Correct formatting: \n`.givepoints \
                     "username#descriminator" points`\ne.g. `.givepoints "alpha#1234" 100`\nYou can find a users\
-                    username and descriminator by clicking on the users profile, it is positioned below the users \
+                    username and discriminator by clicking on the users profile, it is positioned below the users \
                     server nickname.', color=0xFF0000)
                     await message.channel.send(embed=em)
                 else:
@@ -168,7 +173,7 @@ async def on_message(message):
                 except IndexError:
                     em = discord.Embed(title="Formatting error", description='Correct formatting: \n`.givepoints \
                     "username#descriminator" points`\ne.g. `.givepoints "alpha#1234" 100`\nYou can find a users\
-                    username and descriminator by clicking on the users profile, it is positioned below the users \
+                    username and discriminator by clicking on the users profile, it is positioned below the users \
                     server nickname.', color=0xFF0000)
                     await message.channel.send(embed=em)
                 points = userSplit[2]
@@ -176,7 +181,7 @@ async def on_message(message):
                     print("Error: Use username and discriminator when using this function.")
                     em = discord.Embed(title="Formatting error", description='Correct formatting: \n`.removepoints \
                     "username#descriminator" points`\ne.g. `.removepoints "alpha#1234" 100`\nYou can find a users\
-                     username and descriminator by clicking on the users profile, it is positioned below the users \
+                     username and discriminator by clicking on the users profile, it is positioned below the users \
                      server nickname.', color=0xFF0000)
                     await message.channel.send(embed=em)
                 else:
@@ -195,6 +200,29 @@ async def on_message(message):
             {1}. Please check the command syntax. If you need help, type .help to see how to use the \
             command.".format(points, userDisc), color=0xFF0000)
             await message.channel.send(embed=em)
+
+    if message.content.startswith(".info"):
+        user = message.content[6:]
+        userSplit = user.split('"')
+        try:
+            userDisc = userSplit[1]
+        except IndexError:
+            em = discord.Embed(title="Formatting error", description='Correct formatting: \n`.info \
+            "username#descriminator"`\ne.g. `.info "alpha#1234"`\nYou can find a users\
+            username and discriminator by clicking on the users profile, it is positioned below the users \
+            server nickname.', color=0xFF0000)
+            await message.channel.send(embed=em)
+        if "#" not in userDisc:
+            print("Error: Use username and discriminator when using this function.")
+            em = discord.Embed(title="Formatting error", description='Correct formatting: \n`.info \
+            "username#descriminator"`\ne.g. `.info "alpha#1234"`\nYou can find a users\
+            username and discriminator by clicking on the users profile, it is positioned below the users \
+            server nickname.', color=0xFF0000)
+            await message.channel.send(embed=em)
+        else:
+            for x in client.get_all_members():
+                if (x.name + "#" + x.discriminator) == userDisc:
+                    userUsername, userPoints, userJoinDate, userAvatarURL, userRoles = lookupUser(x.id)
 
 
 client.run(secrets.TOKEN)

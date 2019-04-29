@@ -9,6 +9,8 @@ os.makedirs(database_path, exist_ok=True)
 
 db = sqlite3.connect('./database/userDatabase.sqlite3')
 
+cur = db.cursor()
+
 def createDatabase(idList):
     print("Creating database if not already there...")
     db.execute('CREATE TABLE IF NOT EXISTS users (db_id INTEGER PRIMARY KEY, user_id INTEGER UNIQUE, userName TEXT, points INTEGER DEFAULT 0, joinDate TEXT, avatarURL TEXT, roles TEXT)')
@@ -58,3 +60,19 @@ def removePoints(userID, points):
     db.execute('UPDATE users SET points = points - {0} WHERE user_id = "{1}"'.format(points, userID))
     print("Removed {0} points from {1}.".format(points, userID))
     db.commit()
+
+
+def onMessageAddPoints(userID):
+    db.execute('UPDATE users SET points = points + 1 WHERE user_id = "{0}"'.format(userID))
+    db.commit()
+
+
+def lookupUser(userID):
+    cur.execute('SELECT * FROM users WHERE user_id = {0}'.format(userID))
+    data = cur.fetchall()
+    userName = data[0][2]
+    points = data[0][3]
+    joinDate = data[0][4]
+    avatar = data[0][5]
+    roles = data[0][6]
+    return userName, points, joinDate, avatar, roles
